@@ -1,115 +1,156 @@
+import 'package:chaquopy/chaquopy.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: HomePage(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
 
-  void _incrementCounter() {
+  String _outputOrError = "", _error = "";
+
+  Map<String, dynamic> data = Map();
+  bool loadImageVisibility = true;
+
+  @override
+  void initState() {
+    _controller = TextEditingController();
+    _focusNode = FocusNode();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void addIntendation() {
+    TextEditingController _updatedController = TextEditingController();
+
+    int currentPosition = _controller.selection.start;
+
+    String controllerText = _controller.text;
+    String text = controllerText.substring(0, currentPosition) +
+        "    " +
+        controllerText.substring(currentPosition, controllerText.length);
+
+    _updatedController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection(
+        baseOffset: _controller.text.length + 4,
+        extentOffset: _controller.text.length + 4,
+      ),
+    );
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _controller = _updatedController;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return SafeArea(
+      top: true,
+      minimum: const EdgeInsets.only(top: 4),
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  focusNode: _focusNode,
+                  controller: _controller,
+                  minLines: 10,
+                  maxLines: 20,
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Text(
+                    'This shows Output Or Error : $_outputOrError',
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FlatButton(
+                        color: Colors.green,
+                        onPressed: () => addIntendation(),
+                        child: const Icon(
+                          Icons.arrow_right_alt,
+                          size: 50,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FlatButton(
+                        height: 50,
+                        color: Colors.green,
+                        child: const Text(
+                          'run Code',
+                        ),
+                        onPressed: () async {
+                          // to run PythonCode, just use executeCode function, which will return map with following format
+                          // {
+                          // "textOutputOrError" : output of the code / error generated while running the code
+                          // }
+                          final _result =
+                              await Chaquopy.executeCode(_controller.text);
+                          setState(() {
+                            _outputOrError = _result['textOutputOrError'] ?? '';
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
