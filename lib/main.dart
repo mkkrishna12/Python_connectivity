@@ -1,6 +1,8 @@
 import 'package:chaquopy/chaquopy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -51,6 +53,12 @@ class _HomePageState extends State<HomePage> {
     _focusNode.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<String> fetchData() async {
+    Directory getCurrentDirectory = await Directory.current;
+    print(getCurrentDirectory);
+    return await rootBundle.loadString('Text/test.py');
   }
 
   void addIntendation() {
@@ -135,9 +143,10 @@ class _HomePageState extends State<HomePage> {
                           // to run PythonCode, just use executeCode function, which will return map with following format
                           // {
                           // "textOutputOrError" : output of the code / error generated while running the code
-                          // }
+                          // }5
+                          String requiredstring = await fetchData();
                           final _result =
-                              await Chaquopy.executeCode(_controller.text);
+                              await Chaquopy.executeCode(requiredstring);
                           setState(() {
                             _outputOrError = _result['textOutputOrError'] ?? '';
                           });

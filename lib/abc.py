@@ -1,2 +1,2 @@
-def fun:
+def fun():
     print('Hello World')
