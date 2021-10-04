@@ -52,6 +52,7 @@ android {
         python {
             buildPython "/urs/local/bin/python3"
             buildPython 'python3'
+
             pip{
                 install "opencv-python"
                 install "numpy"
@@ -59,6 +60,7 @@ android {
                 install "tensorflow"
                 install "imutils"
             }
+
         }
 
         ndk {
