@@ -30,3 +30,10 @@ defaultConfig {
     }
 }
 After that sync your project.
+
+
+This will not work very well -> 
+
+If you can create own api using django or flask 
+
+or you can use tflie model for object detection 
