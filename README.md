@@ -37,3 +37,6 @@ This will not work very well ->
 If you can create own api using django or flask 
 
 or you can use tflie model for object detection 
+
+
+Or Follow this one -> how to connect flutter and tflite -> https://github.com/sanketmote/Object-Detetcion-Using-Tflie
